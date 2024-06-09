@@ -34,7 +34,8 @@ const getForecast = function() {
     })
     .then(function(data) {
         console.log(data)
-        displayCurrentWeather(data);
+        displayCurrentWeather(data)
+        displayForecast(data);
         //'dt' in returned array stands for 'data timestamp', clockinthe time the forecast is relevant to, formatted as as unix timestamp
     });
 };
@@ -51,6 +52,25 @@ const displayCurrentWeather = function(data) {
         <p>Wind Speed: ${current.wind.speed} m/s</p>
         <img src="http://openweathermap.org/img/w/${current.weather[0].icon}.png" alt="${current.weather[0].description}">
     `;
+};
+
+const displayForecast = function(data) {
+    forecastDiv.innerHTML = '<h2>5-Dat Forecast</h2>';
+    const forecastList = [];
+    for (let i = 8; i < data.list.length && forecastList.length < 5; i += 8) {
+        forecastList.push(data.list[i]);
+    }
+    forecastList.forEach(day => {
+        const forecastItem = document.createElement('div');
+        forecastItem.innerHTML = `
+            <p>Date: ${new Date(day.dt * 1000).toLocaleDateString()}</p>
+            <p>Temperature: ${day.main.temp} °C</p>
+            <p>Humidity: ${day.main.humidity}%</p>
+            <p>Wind Speed: ${day.wind.speed} m/s</p>
+            <img src="http://openweathermap.org/img/w/${day.weather[0].icon}.png" alt="${day.weather[0].description}">
+        `;
+        forecastDiv.appendChild(forecastItem);
+    });
 };
 
 searchBtn.addEventListener('click', getForecast)
