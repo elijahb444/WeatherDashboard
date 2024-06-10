@@ -12,6 +12,7 @@ const apiKey = 'a3aae8933b04e64f40888cfe629f2e70';
 //const forecastUrl = 'api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}'
 
 const getForecast = function() {
+    showSearchHistory()
     const getCoords = function() {
         return fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${userSearch.value}&limit=5&appid=${apiKey}`)
             .then(function(response) {
@@ -26,6 +27,7 @@ const getForecast = function() {
     };
 
     getCoords().then(function(coords) {
+        // returns coords as object
         const { lat, lon } = coords;
         return fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}`);
     })
@@ -42,9 +44,10 @@ const getForecast = function() {
 };
 
 // TODO: find a way to parse/iterate through forecast results
+
 // initialized 'date' object in javscript
 // 'toLocaleDateString() converts dt stored as unix timestamp to readable format
-// openWeather returns temps in Kelvin; celcius = K - 273.15
+// openWeatherAPI returns temps in Kelvin; celcius = K - 273.15
 const displayCurrentWeather = function(data) {
     const current = data.list[0];
     const temperatureCelsius = (current.main.temp - 273.15).toFixed(2); // converts Kelvin to Celsius
@@ -65,7 +68,7 @@ const displayForecast = function(data) {
         forecastList.push(data.list[i]);
     }
     forecastList.forEach(day => {
-        const temperatureCelsius = (day.main.temp - 273.15).toFixed(2); // .toFixed(2) returns a temp value rounded down to 100s place
+        const temperatureCelsius = (day.main.temp - 273.15).toFixed(2); // .toFixed(2) returns a temp value rounded down to .00
         const forecastItem = document.createElement('div');
         forecastItem.innerHTML = `
             <p>Date: ${new Date(day.dt * 1000).toLocaleDateString()}</p>
@@ -88,4 +91,32 @@ const addToSearchHistory = function(city) {
 
 // TODO: Fetch search history from local storage and display on page on load
 
+const showSearchHistory = function() {
+    // Retrieve search history from localStorage or set to an empty array if null
+    const searchHistoryStr = localStorage.getItem('searchHistory');
+    let searchHistory = [];
+    if (searchHistoryStr) {
+        searchHistory = JSON.parse(searchHistoryStr);
+    }
+    // clears the search display
+    searchHistoryDiv.innerHTML = '';
+    // iterates through each city in search history
+    for (let i = 0; i < searchHistory.length; i++) {
+        const city = searchHistory[i];
+        // create a button element for each city
+        const historyItem = document.createElement('button');
+        historyItem.textContent = city;
+        // button.eventlistener
+        historyItem.addEventListener('click', function() {
+            userSearch.value = city;
+            getForecast();
+        });
+
+        // append the button to the search history div
+        searchHistoryDiv.appendChild(historyItem);
+    }
+};
+
+// shows past searches on page load
+document.addEventListener('DOMContentLoaded', showSearchHistory)
 searchBtn.addEventListener('click', getForecast)
