@@ -14,7 +14,7 @@ const apiKey = 'a3aae8933b04e64f40888cfe629f2e70';
 const getForecast = function() {
     showSearchHistory()
     const getCoords = function() {
-        return fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${userSearch.value}&limit=5&appid=${apiKey}`)
+        return fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${userSearch.value}&limit=5&appid=${apiKey}`)
             .then(function(response) {
                 return response.json();
             })
@@ -29,7 +29,7 @@ const getForecast = function() {
     getCoords().then(function(coords) {
         // returns coords as object
         const { lat, lon } = coords;
-        return fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}`);
+        return fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}`);
     })
     .then(function(response) {
         return response.json();
@@ -57,7 +57,7 @@ const displayCurrentWeather = function(data) {
     <p>Temperature: ${temperatureCelsius} °C</p>
     <p>Humidity: ${current.main.humidity}%</p>
     <p>Wind Speed: ${current.wind.speed} m/s</p>
-    <img src="http://openweathermap.org/img/w/${current.weather[0].icon}.png" alt="${current.weather[0].description}">
+    <img src="https://openweathermap.org/img/w/${current.weather[0].icon}.png" alt="${current.weather[0].description}">
     `;
 };
 
@@ -75,7 +75,7 @@ const displayForecast = function(data) {
             <p>Temperature: ${temperatureCelsius} °C</p>
             <p>Humidity: ${day.main.humidity}%</p>
             <p>Wind Speed: ${day.wind.speed} m/s</p>
-            <img src="http://openweathermap.org/img/w/${day.weather[0].icon}.png" alt="${day.weather[0].description}">
+            <img src="https://openweathermap.org/img/w/${day.weather[0].icon}.png" alt="${day.weather[0].description}">
         `;
         forecastDiv.appendChild(forecastItem);
     });
